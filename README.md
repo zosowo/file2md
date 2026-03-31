@@ -20,41 +20,31 @@ RAG(Retrieval-Augmented Generation) 시스템에서 문서를 LLM에 공급하�
 ## 폴더 구조
 
 ```
-parser/                        ← 프로젝트 루트
+file2md/                       ← 프로젝트 루트
 ├── README.md
 ├── requirements.txt
-├── requirements-dev.txt
 ├── setup.py                   ← pip install -e . 로 패키지 설치
 │
-├── file2md/                   ← 패키지 루트 (import file2md)
-│   ├── __init__.py            ← 공개 API: convert(), convert_batch()
-│   ├── __main__.py            ← python -m file2md 진입점
-│   ├── cli.py                 ← CLI argparse 정의
-│   │
-│   ├── core/
-│   │   ├── base.py            ← BaseConverter(ABC), ConvertResult
-│   │   └── factory.py         ← ConverterFactory (확장자→컨버터 라우팅)
-│   │
-│   ├── converters/
-│   │   ├── txt.py             ← TxtConverter
-│   │   ├── pdf.py             ← PdfConverter
-│   │   ├── docx.py            ← DocxConverter
-│   │   ├── excel.py           ← ExcelConverter
-│   │   ├── html.py            ← HtmlConverter
-│   │   ├── pptx.py            ← PptxConverter
-│   │   └── url.py             ← UrlConverter (HtmlConverter 상속)
-│   │
-│   └── utils/
-│       └── markdown.py        ← table_to_markdown() 등 공통 유틸
-│
-└── tests/
-    ├── conftest.py            ← pytest 픽스처
-    ├── fixtures/samples/      ← 테스트용 샘플 파일 보관 위치
-    ├── test_txt.py
-    ├── test_html.py
-    ├── test_markdown_utils.py
-    ├── test_factory.py
-    └── test_api.py
+└── file2md/                   ← 패키지 루트 (import file2md)
+    ├── __init__.py            ← 공개 API: convert(), convert_batch()
+    ├── __main__.py            ← python -m file2md 진입점
+    ├── cli.py                 ← CLI argparse 정의
+    │
+    ├── core/
+    │   ├── base.py            ← BaseConverter(ABC), ConvertResult
+    │   └── factory.py         ← ConverterFactory (확장자→컨버터 라우팅)
+    │
+    ├── converters/
+    │   ├── txt.py             ← TxtConverter
+    │   ├── pdf.py             ← PdfConverter
+    │   ├── docx.py            ← DocxConverter
+    │   ├── excel.py           ← ExcelConverter
+    │   ├── html.py            ← HtmlConverter
+    │   ├── pptx.py            ← PptxConverter
+    │   └── url.py             ← UrlConverter (HtmlConverter 상속)
+    │
+    └── utils/
+        └── markdown.py        ← table_to_markdown() 등 공통 유틸
 ```
 
 ---
@@ -64,21 +54,21 @@ parser/                        ← 프로젝트 루트
 ### 1. 의존성 설치
 
 ```bash
-cd parser
+cd file2md
 pip install -r requirements.txt
 ```
 
 ### 2. 패키지로 설치 (다른 프로젝트에서 import 하려면)
 
 ```bash
-cd parser
+cd file2md
 pip install -e .
 ```
 
 `-e`(editable) 옵션으로 설치하면 소스 코드를 수정해도 재설치 없이 즉시 반영됩니다.
 
 > **import가 안 될 때 확인사항**
-> - `pip install -e .` 를 `parser/` 디렉토리에서 실행했는지 확인
+> - `pip install -e .` 를 `file2md/` 디렉토리에서 실행했는지 확인
 > - `setup.py`가 있는 위치와 같은 디렉토리인지 확인
 > - `python -c "import file2md; print(file2md.__file__)"` 으로 경로 확인
 
@@ -293,26 +283,6 @@ from file2md.core.factory import ConverterFactory
 from my_converters import CsvConverter
 
 ConverterFactory.register("csv", CsvConverter)
-```
-
----
-
-## 테스트 실행
-
-```bash
-cd parser
-
-# 전체 테스트
-pytest
-
-# 커버리지 포함
-pytest --cov=file2md --cov-report=term-missing
-
-# 특정 파일만
-pytest tests/test_txt.py -v
-
-# 특정 테스트만
-pytest tests/test_txt.py::TestTxtConverter::test_korean_preserved -v
 ```
 
 ---
