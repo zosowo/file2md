@@ -98,14 +98,17 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv=None) -> int:
-    parser = build_parser()
-    args = parser.parse_args(argv)
-
-    # 지원 형식 목록 출력
-    if args.formats:
+    # --formats는 입력 없이도 동작해야 하므로 먼저 처리
+    if argv is None:
+        import sys
+        argv = sys.argv[1:]
+    if "--formats" in argv:
         from file2md.core.factory import ConverterFactory
         print("지원 형식:", ", ".join(ConverterFactory.supported_formats()))
         return 0
+
+    parser = build_parser()
+    args = parser.parse_args(argv)
 
     from file2md import convert, convert_batch
 
@@ -114,7 +117,11 @@ def main(argv=None) -> int:
     # ── 단일 파일 ──────────────────────────────
     if args.input or args.url:
         source = args.url or args.input
-        result = convert(source, output_path=args.output, save_file=save_file)
+        try:
+            result = convert(source, output_path=args.output, save_file=save_file)
+        except ValueError as e:
+            print(f"오류: {e}", file=sys.stderr)
+            return 1
 
         if result.success:
             if args.no_save:
